@@ -6,7 +6,7 @@ from threading import Thread
 
 
 class ClusterManager:
-    def __init__(self, service_name, node_manager_class, nodes_file='nodes.yaml'):
+    def __init__(self, service_name, node_manager_class, nodes_file='nodes.yaml', timeout=60):
         with open(nodes_file, 'r') as input_file:
             props = yaml.safe_load(input_file)
         props['service_name'] = service_name
@@ -21,7 +21,10 @@ class ClusterManager:
             'port': 22,
             'user': props['user'],
             'connect_kwargs': {
-                "key_filename": props['keyfile']
+                "key_filename": props['keyfile'],
+                # 'timeout': timeout,
+                # 'banner_timeout': timeout,
+                # 'auth_timeout': timeout
             }
         }
 
@@ -34,7 +37,7 @@ class ClusterManager:
             node_props['index'] = index
             node_props['id'] = index + 1
 
-            node_manager = node_manager_class(node_props, node_conn_props)
+            node_manager = node_manager_class(node_props, node_conn_props, timeout=timeout)
             self.node_managers.append(node_manager)
 
     def deploy(self):

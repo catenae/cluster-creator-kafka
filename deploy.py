@@ -8,16 +8,15 @@ from setup import AwsSetupNodeManager
 from worker import WorkerNodeManager
 from master import MasterNodeManager
 
-
 ClusterManager('setup', AwsSetupNodeManager).deploy()
 
 kafka_manager = ClusterManager('kafka', KafkaNodeManager)
 kafka_manager.destroy()
-kafka_manager.clean_data() # remove
+kafka_manager.clean_data()  # remove
 
 zookeeper_manager = ClusterManager('zookeeper', ZookeeperNodeManager)
 zookeeper_manager.destroy()
-zookeeper_manager.clean_data() # remove
+zookeeper_manager.clean_data()  # remove
 zookeeper_manager.deploy()
 zookeeper_manager.configure()
 zookeeper_manager.start()

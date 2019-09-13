@@ -9,17 +9,22 @@ import shutil
 
 
 class NodeManager:
-    def __init__(self, props, conn_props):
+    def __init__(self, props, conn_props, timeout=60):
         props['node'] = props['services'][props['service_name']]['nodes'][props['index']]
         self.props = props
         self.conn = Connection(**conn_props)
+        self.timeout = timeout
+
+    def run_cmd(self, cmd):
+        # self.conn.run(cmd, timeout=self.timeout)
+        self.conn.run(cmd)
 
     def deploy(self):
         self.pull()
         self.run()
 
     def pull(self):
-        self.conn.run(f"docker pull {self.props['container_image']}")
+        self.run_cmd(f"docker pull {self.props['container_image']}")
 
     def configure(self):
         self._prepare_local_env()
@@ -36,13 +41,13 @@ class NodeManager:
         raise NotImplementedError
 
     def stop(self):
-        self.conn.run(f"docker stop {self.props['container_name']}")
+        self.run_cmd(f"docker stop {self.props['container_name']}")
 
     def destroy(self):
         try:
             self.stop()
             try:
-                self.conn.run(f"docker rm -f {self.props['container_name']}")
+                self.run_cmd(f"docker rm -f {self.props['container_name']}")
             except Exception:
                 return
         except Exception:
@@ -50,9 +55,9 @@ class NodeManager:
 
     def clean_data(self):
         if 'host_data_path' in self.props:
-            self.conn.run(f"sudo rm -rf {self.props['host_data_path']}")
+            self.run_cmd(f"sudo rm -rf {self.props['host_data_path']}")
         if 'host_logs_paths' in self.props:
-            self.conn.run(f"sudo rm -rf {self.props['host_logs_paths']}")
+            self.run_cmd(f"sudo rm -rf {self.props['host_logs_paths']}")
 
     def _get_rendered_service_dir_path(self):
         return f"{self._get_rendered_dir_path()}{self.props['service_name']}/"
@@ -125,13 +130,13 @@ class NodeManager:
         return '/'.join(path.split('/')[:-1]) + '/'
 
     def _make_host_tmp_path(self):
-        self.conn.run(f"mkdir -p {self.props['host_tmp_path']}{self.props['service_name']}")
+        self.run_cmd(f"mkdir -p {self.props['host_tmp_path']}{self.props['service_name']}")
 
     def _copy_files_to_host(self):
         for path in self._get_all_conf_files_paths():
             rel_path = self._get_rel_dir_path_from_file_path(path)
             host_dir_path = f"{self.props['host_tmp_path']}{self.props['service_name']}/{rel_path}"
-            self.conn.run(f'mkdir -p {host_dir_path}')
+            self.run_cmd(f'mkdir -p {host_dir_path}')
             self.conn.put(f"{path}", remote=f"{host_dir_path}")
 
     def _copy_files_to_container(self):
@@ -143,11 +148,10 @@ class NodeManager:
             rel_dir_path = self._get_rel_dir_path_from_file_path(path)
             container_dir_path = self.props['container_installation_path'] + rel_dir_path
 
-            self.conn.run(
+            self.run_cmd(
                 f"docker exec {self.props['container_name']} mkdir -p {container_dir_path}")
-            self.conn.run(
-                f"docker cp {host_file_path} {self.props['container_name']}:{container_dir_path}"
-            )
+            self.run_cmd(
+                f"docker cp {host_file_path} {self.props['container_name']}:{container_dir_path}")
 
     def _get_rel_path_from_file_path(self, path):
         discarded_path = f"{self._get_rendered_dir_path()}{self.props['service_name']}/"
@@ -160,4 +164,4 @@ class NodeManager:
         return '/'.join(rel_dir_path.split('/'))
 
     def _remove_host_tmp_path(self):
-        self.conn.run(f"rm -rf {self.props['host_tmp_path']}{self.props['service_name']}")
+        self.run_cmd(f"rm -rf {self.props['host_tmp_path']}{self.props['service_name']}")
