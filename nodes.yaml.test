@@ -1,20 +1,20 @@
-user: centos
-keyfile: /home/brunneis/.ssh/brunneis.key
+user: ec2-user
+keyfile: /home/brunneis/ec2.key
 host_tmp_path: /tmp/ancoris/
 local_conf_path: conf/
 
 nodes:
    node1: &node1
-      public_address: 3.227.16.134
-      private_address: 172.26.65.23
+      public_address: 3.91.33.213
+      private_address: 172.31.15.54
 
    node2: &node2
-      public_address: 3.227.241.162
-      private_address: 172.26.68.198
+      public_address: 3.89.183.161
+      private_address: 172.31.3.101
 
    node3: &node3
-      public_address: 18.209.210.178
-      private_address: 172.26.79.235
+      public_address: 3.84.126.179
+      private_address: 172.31.15.241
 
 services:
    setup:
@@ -63,8 +63,8 @@ services:
          container_image: catenae/kafka-base
          container_name: ancoris-kafka
          container_installation_path: /opt/kafka/default/
-         min_heap: 2G
-         max_heap: 3G
+         min_heap: 1G
+         max_heap: 1G
          internal_port: 19092
          external_port: 9092
          num_network_threads: 3
@@ -91,3 +91,21 @@ services:
          max_message_bytes: 1048576
          auto_create_topics_enable: True
          unclean_leader_election_enabled: False
+
+   worker:
+      nodes:
+         -  << : *node1
+         -  << : *node2
+         -  << : *node3
+      props:
+         jsonrpc_port: 2048
+         container_name: ancoris-worker
+         container_image: catenae/ancoris
+
+   master:
+      nodes:
+         -  << : *node1
+      props:
+         jsonrpc_port: 4096
+         container_name: ancoris-master
+         container_image: catenae/ancoris

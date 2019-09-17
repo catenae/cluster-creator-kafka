@@ -4,11 +4,13 @@
 from cluster_manager import ClusterManager
 from kafka import KafkaNodeManager
 from zookeeper import ZookeeperNodeManager
-from setup import AwsSetupNodeManager
+from setup import (AmazonLinux1Manager, AmazonLinux2Manager, CentOS7Manager)
 from worker import WorkerNodeManager
 from master import MasterNodeManager
 
-ClusterManager('setup', AwsSetupNodeManager).deploy()
+ClusterManager('setup', CentOS7Manager).deploy()
+# ClusterManager('setup', AmazonLinux1Manager).deploy()
+# ClusterManager('setup', AmazonLinux2Manager).deploy()
 
 kafka_manager = ClusterManager('kafka', KafkaNodeManager)
 kafka_manager.destroy()
@@ -25,10 +27,10 @@ kafka_manager.deploy()
 kafka_manager.configure()
 kafka_manager.start()
 
-worker_manager = ClusterManager('worker', WorkerNodeManager)
-worker_manager.destroy()
-worker_manager.deploy()
+# worker_manager = ClusterManager('worker', WorkerNodeManager)
+# worker_manager.destroy()
+# worker_manager.deploy()
 
-master_manager = ClusterManager('master', MasterNodeManager)
-master_manager.destroy()
-master_manager.deploy()
+# master_manager = ClusterManager('master', MasterNodeManager)
+# master_manager.destroy()
+# master_manager.deploy()
