@@ -18,8 +18,8 @@ class ClusterManager:
             pass
 
         conn_props = {
-            'port': 22,
-            'user': props['user'],
+            'user': props['ssh_user'],
+            'port': props['ssh_port'],
             'connect_kwargs': {
                 "key_filename": props['keyfile'],
                 # 'timeout': timeout,
@@ -32,6 +32,10 @@ class ClusterManager:
         for index, node in enumerate(props['services'][service_name]['nodes']):
             node_conn_props = dict(conn_props)
             node_conn_props['host'] = node['public_address']
+
+            # Override node ssh port
+            if 'ssh_port' in node:
+                node_conn_props['port'] = node['ssh_port']
 
             node_props = dict(props)
             node_props['index'] = index

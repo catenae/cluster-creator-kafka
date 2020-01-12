@@ -4,11 +4,12 @@
 from cluster_manager import ClusterManager
 from kafka import KafkaNodeManager
 from zookeeper import ZookeeperNodeManager
-from setup import (AmazonLinux1Manager, AmazonLinux2Manager, CentOS7Manager)
+from setup import (AmazonLinux1Manager, AmazonLinux2Manager, CentOS7Manager, CentOS8Manager)
 from worker import WorkerNodeManager
 from master import MasterNodeManager
 
-ClusterManager('setup', CentOS7Manager).deploy()
+# ClusterManager('setup', CentOS8Manager).deploy()
+# ClusterManager('setup', CentOS7Manager).deploy()
 # ClusterManager('setup', AmazonLinux1Manager).deploy()
 # ClusterManager('setup', AmazonLinux2Manager).deploy()
 

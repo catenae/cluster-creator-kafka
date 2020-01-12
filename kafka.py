@@ -7,7 +7,7 @@ from node_manager import NodeManager
 class KafkaNodeManager(NodeManager):
     def run(self):
         self.run_cmd(
-            'docker run -di '
+            'docker run -dit '
             # Published ports
             +
             f"--publish {self.props['node']['private_address']}:{self.props['internal_port']}:{self.props['internal_port']} "
