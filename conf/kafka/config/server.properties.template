@@ -136,14 +136,19 @@ zookeeper.connection.timeout.ms={{ zookeeper_connection_timeout_ms }}
 # However, in production environments the default value of 3 seconds is more suitable as this will help to avoid unnecessary, and potentially expensive, rebalances during application startup.
 group.initial.rebalance.delay.ms={{ group_initial_rebalance_delay_ms }}
 
+
+############################# Topic Defaults #############################
+# Default replication factor for automatically created topics
+default.replication.factor={{ default_replication_factor }}
+
+# Already true by default
+auto.create.topics.enable={{ auto_create_topics_enable }}
+
 ############################# Message Size #############################
 replica.fetch.max.bytes={{ replica_fetch_max_bytes }}
 message.max.bytes={{ message_max_bytes }}
 max.message.bytes={{ max_message_bytes }}
 
 ############################# Other Settings #############################
-# Already true by default
-auto.create.topics.enable={{ auto_create_topics_enable }}
-
 # Avoid data loss
 unclean.leader.election.enabled={{ unclean_leader_election_enabled }}
